@@ -258,4 +258,15 @@ const RANKS = [
 // Kept empty for now. Each entry's `questions` array uses the same {mcq|tap}
 // exercise shape as UNITS. There is no in-app upload — send Claude a PDF and
 // it will extract the text, write questions from it, and append an entry here.
+// Bundled reference documents users can open/read directly (not quizzes).
+// href is relative to index.html, so the PDF ships inside the app itself —
+// no internet connection needed to open it.
+const RESOURCES = [
+  {
+    title: "10-Day Nahw Course (Full PDF)",
+    description: "The complete written course this app's lessons are based on.",
+    href: "assets/nahw-10-day-course.pdf"
+  }
+];
+
 const MATERIALS = [];

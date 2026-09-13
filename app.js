@@ -383,6 +383,7 @@ function defaultState(){
     lastActiveDate:null,
     hearts:5,
     heartsMax:5,
+    heartsLossDate:null,   // date string (YYYY-MM-DD) hearts first dropped below max; cleared on regen
     completedUnits:{},     // {unitId: {mistakes:0}}
     unlockedAchievements:[],
     currentUnit:1,
@@ -444,7 +445,7 @@ const STRINGS = {
     insights_strong:"💪 Strong Areas", insights_weak:"🎯 Focus Areas", insights_all:"All Topics",
     materials_eyebrow:"STUDY MATERIALS", materials_title:"Your Library",
     materials_sub:"Extra quizzes built from study materials.",
-    materials_empty:"No study materials yet — check back soon ✨", start_quiz_btn:"Start Quiz",
+    materials_empty:"No study materials yet — check back soon ✨", start_quiz_btn:"Start Quiz", read_pdf_btn:"Read PDF",
     companion_struggling:"Your astronaut's taking it slow tonight — that's okay! Even the brightest stars dim sometimes. One more try? 💫",
     companion_thriving:"<b>You're on a roll!</b> Your astronaut is kicking their feet with excitement ✨",
     companion_idle:"Your astronaut is perched on the moon, legs swinging — ready when you are.",
@@ -484,7 +485,7 @@ const STRINGS = {
     insights_strong:"💪 Mazboot Jaghain", insights_weak:"🎯 Tawajju Talab Jaghain", insights_all:"Tamam Mozuaat",
     materials_eyebrow:"STUDY MATERIALS", materials_title:"Aapki Library",
     materials_sub:"Study materials se bane extra quiz.",
-    materials_empty:"Abhi koi study material nahi — jald dekhein ✨", start_quiz_btn:"Quiz Shuru Karein",
+    materials_empty:"Abhi koi study material nahi — jald dekhein ✨", start_quiz_btn:"Quiz Shuru Karein", read_pdf_btn:"PDF Parhein",
     companion_struggling:"Aapka astronaut aaj ki raat aahista chal raha hai — koi baat nahi! Sab se roshan sitare bhi kabhi mand parte hain. Ek aur koshish? 💫",
     companion_thriving:"<b>Aap kamaal kar rahe hain!</b> Aapka astronaut josh se pair hila raha hai ✨",
     companion_idle:"Aapka astronaut chand par baitha hai, pair hila raha hai — jab aap tayyar hon.",
@@ -659,10 +660,25 @@ function materialCard(m){
   </div>`;
 }
 
+function resourceCard(r){
+  return `<div class="challenge-card">
+    <div class="challenge-icon">${icon('book')}</div>
+    <div class="challenge-body">
+      <div class="challenge-title">${escapeHtml(r.title)}</div>
+      <div class="challenge-desc">${escapeHtml(r.description || '')}</div>
+      <div style="margin-top:6px;">
+        <a class="primary-btn" style="width:100%;padding:10px;display:block;text-align:center;box-sizing:border-box;text-decoration:none;" href="${r.href}" target="_blank" rel="noopener">${t('read_pdf_btn')}</a>
+      </div>
+    </div>
+  </div>`;
+}
+
 function renderMaterials(){
+  const resources = (typeof RESOURCES !== 'undefined' && RESOURCES.length)
+    ? RESOURCES.map(resourceCard).join('') : '';
   const cards = (typeof MATERIALS !== 'undefined' && MATERIALS.length)
     ? MATERIALS.map(materialCard).join('')
-    : `<div class="insight-empty">${t('materials_empty')}</div>`;
+    : (resources ? '' : `<div class="insight-empty">${t('materials_empty')}</div>`);
   app.innerHTML = `
   <div class="screen active">
     <div class="path-header">
@@ -670,7 +686,7 @@ function renderMaterials(){
       <h1 class="section-h1">${t('materials_title')} <span class="arabic" style="font-size:20px;">مَوَادّ</span></h1>
       <p class="rank-line">${t('materials_sub')}</p>
     </div>
-    <div class="challenge-list">${cards}</div>
+    <div class="challenge-list">${resources}${cards}</div>
     ${bottomNav('materials')}
   </div>`;
 }
@@ -733,9 +749,25 @@ window.startUnit = startUnit;
 window.navigate = navigate;
 
 function regenCheck(){
-  // simple regen: 1 heart back if a full day passed since hearts hit 0 (approx via lastActiveDate gap)
-  if(state.hearts < state.heartsMax){
-    state.hearts = state.heartsMax; // generous regen on new day, keeps flow simple
+  // Full regen once a calendar day has passed since hearts first dropped below max.
+  // Bug fix: this used to refill on every app load/open regardless of date, which
+  // meant hearts never actually stayed lost — closing and reopening the app was
+  // enough to fully restore them. Now it only refills after the day has turned over.
+  if(state.hearts >= state.heartsMax){
+    if(state.heartsLossDate){ state.heartsLossDate = null; saveState(); }
+    return;
+  }
+  const today = todayStr();
+  if(!state.heartsLossDate){
+    // Hearts are below max but we don't have a loss date on record (e.g. upgrading
+    // from an old save) — start the clock now rather than refilling immediately.
+    state.heartsLossDate = today;
+    saveState();
+    return;
+  }
+  if(state.heartsLossDate !== today){
+    state.hearts = state.heartsMax;
+    state.heartsLossDate = null;
     saveState();
   }
 }
@@ -1002,6 +1034,7 @@ function handleAnswer(correct, explanation){
   if(!correct){
     lessonCtx.mistakes += 1;
     state.hearts = Math.max(0, state.hearts - 1);
+    if(state.hearts < state.heartsMax && !state.heartsLossDate) state.heartsLossDate = todayStr();
     saveState();
   } else {
     state.xp += 10;
