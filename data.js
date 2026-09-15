@@ -83,7 +83,7 @@ const UNITS = [
     {type:'mcq', prompt:"What makes an ism \"light\"?", options:["Removing the extra 'n' sound (tanween or an extra نْ)","Adding tanween","Adding اَلْـ","Making it plural"], answer:0, explanation:"Light = the extra 'n' sound is gone, either the tanween or a final نْ."},
     {type:'mcq', prompt:"Does an ism carrying اَلْـ count as \"light\"?", options:["Yes, اَلْـ makes it light","No — اَلْـ just doesn't take tanween, that's different from being light","Only in Jarr","Only in Raf"], answer:1, explanation:"اَلْـ blocks tanween, but that alone doesn't make the ism light — the two rules are separate."},
     {type:'mcq', prompt:"«مُسْلِمٌ» is heavy (Raf, with tanween). What's its light form?", options:["مُسْلِمُ","مُسْلِمٌ","مُسْلِمًا","مُسْلِمِينَ"], answer:0, explanation:"Drop the tanween's extra 'n' sound: مُسْلِمُ is the light Raf form."},
-    {type:'mcq', prompt:"«مُسْلِمًا» is heavy (Nasb). What's its light form?", options:["مُسْلِمَ","مُسْلِمَا","مُسْلِمٍ","مُسْلِمُونَ"], answer:1, explanation:"Drop the tanween: مُسْلِمَا is the light Nasb form."},
+    {type:'mcq', prompt:"«مُسْلِمًا» is heavy (Nasb). What's its light form?", options:["مُسْلِمَ","مُسْلِمَا","مُسْلِمٍ","مُسْلِمُونَ"], answer:0, explanation:"Drop the tanween and the alif: مُسْلِمَ is the light Nasb form."},
     {type:'mcq', prompt:"Which of these directly makes an ism light?", options:["Dropping the tanween","Adding an extra نْ","Adding tanween","Doubling a letter"], answer:0, explanation:"Dropping tanween removes the extra 'n' sound — that's what makes an ism light."}
   ],
   ur:{
@@ -93,7 +93,7 @@ const UNITS = [
       {prompt:"Ism ko \"halka\" kya banata hai?", options:["Extra 'n' ki awaaz hatana (tanween ya extra نْ)","Tanween lagana","اَلْـ lagana","Jama banana"], explanation:"Halka = extra 'n' ki awaaz khatam, chahe woh tanween ho ya aakhri نْ."},
       {prompt:"Kya اَلْـ wala ism \"halka\" shumar hota hai?", options:["Haan, اَلْـ ise halka banata hai","Nahin — اَلْـ sirf tanween rokta hai, yeh halka hone se alag hai","Sirf Jarr mein","Sirf Raf' mein"], explanation:"اَلْـ tanween rok deta hai, lekin isse ism halka nahi banta — yeh do alag qawaid hain."},
       {prompt:"«مُسْلِمٌ» bhaari hai (Raf', tanween ke sath). Iski halki shakal kya hai?", options:["مُسْلِمُ","مُسْلِمٌ","مُسْلِمًا","مُسْلِمِينَ"], explanation:"Tanween ki extra 'n' awaaz hataayein: مُسْلِمُ halki Raf' shakal hai."},
-      {prompt:"«مُسْلِمًا» bhaari hai (Nasb). Iski halki shakal kya hai?", options:["مُسْلِمَ","مُسْلِمَا","مُسْلِمٍ","مُسْلِمُونَ"], explanation:"Tanween hataayein: مُسْلِمَا halki Nasb shakal hai."},
+      {prompt:"«مُسْلِمًا» bhaari hai (Nasb). Iski halki shakal kya hai?", options:["مُسْلِمَ","مُسْلِمَا","مُسْلِمٍ","مُسْلِمُونَ"], explanation:"Tanween aur alif dono hataayein: مُسْلِمَ halki Nasb shakal hai."},
       {prompt:"In mein se kya seedha ism ko halka banata hai?", options:["Tanween girana","Extra نْ lagana","Tanween lagana","Harf double karna"], explanation:"Tanween girane se extra 'n' ki awaaz khatam hoti hai — yehi ism ko halka banata hai."}
     ]
   }

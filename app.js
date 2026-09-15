@@ -870,33 +870,26 @@ function beginExercises(){
 }
 window.beginExercises = beginExercises;
 
-/* ---------- PLATFORMER MINIGAME: jump to the planet, bonk the block, reveal the answer ---------- */
-const PLATFORMER_LAYOUT = [
-  {left:28, top:60, badge:'planet'},
-  {left:50, top:32, badge:'moon'},
-  {left:72, top:54, badge:'planet'},
-  {left:88, top:18, badge:'ufo'}
-];
-const BLOCK_TYPES = ['star','comet','star','comet'];
+/* ---------- PLATFORMER MINIGAME: astronaut jumps to whichever option you pick ---------- */
+const OPTION_BADGES = ['planet','moon','planet','ufo'];
 
 function renderPlatformerStage(ex){
-  const planets = ex.options.map((o,i)=>{
-    const p = PLATFORMER_LAYOUT[i];
+  const rows = ex.options.map((o,i)=>{
+    const badge = OPTION_BADGES[i % OPTION_BADGES.length];
+    const side = i % 2 === 0 ? 'right' : 'left'; // planet alternates sides of the option
+    const badgeEl = `<div class="option-badge">${spaceBadgeSVG(badge, 40)}</div>`;
     return `
-    <div class="stage-planet" id="planet${i}" style="left:${p.left}%;top:${p.top}%;" onclick="jumpTo(${i})">
-      <div class="stage-block" id="block${i}">
-        <div class="block-icon">${spaceBadgeSVG(BLOCK_TYPES[i], 34)}</div>
-        <div class="block-q">?</div>
-      </div>
-      <div class="planet-icon">${spaceBadgeSVG(p.badge, 44)}</div>
-      <div class="planet-label"><span class="ar">${o}</span></div>
+    <div class="stage-option side-${side}" id="option${i}" onclick="jumpTo(${i})">
+      ${side==='left' ? badgeEl : ''}
+      <div class="option-label"><span class="ar">${o}</span></div>
+      ${side==='right' ? badgeEl : ''}
+      <div class="option-result" id="result${i}"></div>
     </div>`;
   }).join('');
   return `
   <div class="stage" id="stage">
-    <div class="stage-launchpad"></div>
     <div class="stage-astro" id="stageAstro">${astronautReadySVG()}</div>
-    ${planets}
+    <div class="stage-options">${rows}</div>
   </div>`;
 }
 
@@ -907,15 +900,15 @@ function jumpTo(i){
   lessonCtx.answered = true;
   lessonCtx.selected = i;
 
-  document.querySelectorAll('.stage-planet').forEach(el=>el.style.pointerEvents='none');
+  document.querySelectorAll('.stage-option').forEach(el=>el.style.pointerEvents='none');
 
   const stage = document.getElementById('stage');
   const astro = document.getElementById('stageAstro');
   const sprite = astro.querySelector('.astro-sprite');
-  const targetPlanet = document.getElementById('planet'+i);
+  const targetOption = document.getElementById('option'+i);
   const stageRect = stage.getBoundingClientRect();
   const astroRect = astro.getBoundingClientRect();
-  const targetRect = targetPlanet.getBoundingClientRect();
+  const targetRect = targetOption.getBoundingClientRect();
 
   const startX = astroRect.left - stageRect.left;
   const startY = astroRect.top - stageRect.top;
@@ -966,27 +959,27 @@ function onLanded(i, ex){
   const astro = document.getElementById('stageAstro');
   astro.innerHTML = correct ? astronautCelebrateSVG() : astronautEncourageSVG();
 
-  const block = document.getElementById('block'+i);
-  block.classList.add('hit', correct ? 'correct' : 'wrong');
-  const qEl = block.querySelector('.block-q');
-  if(qEl) qEl.textContent = correct ? '✓' : '✕';
+  const opt = document.getElementById('option'+i);
+  opt.classList.add(correct ? 'correct' : 'wrong');
+  const resEl = opt.querySelector('.option-result');
+  if(resEl) resEl.textContent = correct ? '✓' : '✕';
 
   if(!correct){
-    const correctBlock = document.getElementById('block'+ex.answer);
-    if(correctBlock){
-      correctBlock.classList.add('hit','correct-reveal');
-      const cq = correctBlock.querySelector('.block-q');
+    const correctOpt = document.getElementById('option'+ex.answer);
+    if(correctOpt){
+      correctOpt.classList.add('correct-reveal');
+      const cq = correctOpt.querySelector('.option-result');
       if(cq) cq.textContent = '✓';
     }
   }
   ex.options.forEach((_,j)=>{
     if(j!==i && j!==ex.answer){
-      const p = document.getElementById('planet'+j);
+      const p = document.getElementById('option'+j);
       if(p) p.classList.add('dim');
     }
   });
 
-  if(correct) spawnParticles(block);
+  if(correct) spawnParticles(opt);
   handleAnswer(correct, ex.explanation);
 }
 
@@ -1043,8 +1036,8 @@ function handleAnswer(correct, explanation){
   }
   footer.innerHTML = `
     <div class="explain-box ${correct?'correct':'wrong'}">
-      <b>${correct ? t('correct_label') : t('not_quite_label')}</b>
-      ${explanation}
+      <span class="explain-icon" title="${correct ? t('correct_label') : t('not_quite_label')}">${correct?'✓':'✕'}</span>
+      <span>${explanation}</span>
     </div>
     <button class="primary-btn ${correct?'':'gold'}" onclick="nextExercise()">${t('continue_btn')}</button>
   `;
