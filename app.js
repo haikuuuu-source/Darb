@@ -906,14 +906,15 @@ function jumpTo(i){
   const astro = document.getElementById('stageAstro');
   const sprite = astro.querySelector('.astro-sprite');
   const targetOption = document.getElementById('option'+i);
+  const targetBadge = targetOption.querySelector('.option-badge');
   const stageRect = stage.getBoundingClientRect();
   const astroRect = astro.getBoundingClientRect();
-  const targetRect = targetOption.getBoundingClientRect();
+  const targetRect = (targetBadge || targetOption).getBoundingClientRect();
 
   const startX = astroRect.left - stageRect.left;
   const startY = astroRect.top - stageRect.top;
   const endX = (targetRect.left - stageRect.left) + (targetRect.width/2) - (astroRect.width/2);
-  const endY = (targetRect.top - stageRect.top) - astroRect.height*0.15;
+  const endY = (targetRect.top - stageRect.top) + (targetRect.height/2) - (astroRect.height*0.6);
   const dist = Math.hypot(endX-startX, endY-startY);
   const doSomersault = dist > 130;
 
