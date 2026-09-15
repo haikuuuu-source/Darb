@@ -199,8 +199,8 @@ button{font-family:'Inter',sans-serif;cursor:pointer;border:none;background:none
 .stage{
   position:relative;width:100%;margin-bottom:10px;padding-top:50px;
   background:radial-gradient(ellipse 90% 60% at 50% 0%, rgba(63,224,200,0.08), transparent 70%);
-  border:1px solid rgba(255,255,255,0.1);border-radius:20px;overflow:hidden;
-  padding-left:4px;padding-right:4px;padding-bottom:4px;
+  border-radius:20px;overflow:hidden;
+  padding-left:4px;padding-right:4px;padding-bottom:0;
 }
 .stage-astro{
   position:absolute;left:50%;top:6px;width:30px;height:42px;z-index:20;
@@ -235,7 +235,7 @@ button{font-family:'Inter',sans-serif;cursor:pointer;border:none;background:none
   background:rgba(255,255,255,0.05);transition:opacity .3s, border-color .2s, background .2s;
 }
 .stage-option.side-left{flex-direction:row;}
-.stage-option.side-right{flex-direction:row-reverse;}
+.stage-option.side-right{flex-direction:row;}
 .stage-option.dim{opacity:0.3;}
 .option-badge{width:40px;height:40px;flex:none;filter:drop-shadow(0 4px 8px rgba(0,0,0,0.35));}
 .option-label{flex:1;text-align:center;}
